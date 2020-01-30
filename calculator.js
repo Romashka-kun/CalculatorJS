@@ -53,9 +53,9 @@
     }
 
     function parse() {
-        let displayMemory = display.textContent.split(' ');
+        let displayMemory = input.textContent.split(' ');
 
-        if (displayMemory.includes('')) display.textContent = 'ERROR';
+        if (displayMemory.includes('')) input.textContent = 'ERROR';
 
         else if (displayMemory.length > 2) {
 
@@ -75,7 +75,8 @@
             outQueue = [...outQueue, ...opStack.reverse()];
 
             let answer = evalExpr(outQueue);
-            display.textContent = isNaN(answer) ? answer : parseFloat(answer.toFixed(10));
+            displayExpr.textContent = input.textContent;
+            input.textContent = isNaN(answer) ? answer : parseFloat(answer.toFixed(10));
         }
         isAnswer = true;
         clearCache();
@@ -84,21 +85,22 @@
     function pressNumber(number) {
         if (isAnswer) {
             isAnswer = false;
-            display.textContent = '';
+            displayExpr.textContent = 'Answer = ' + input.textContent;
+            input.textContent = '';
         }
-        if (display.textContent === '0') display.textContent = '';
-        if (display.textContent.slice(-2) === ' 0' && number !== '.') display.textContent = display.textContent.slice(0, -1);
+        if (input.textContent === '0') input.textContent = '';
+        if (input.textContent.slice(-2) === ' 0' && number !== '.') input.textContent = input.textContent.slice(0, -1);
         if (this.textContent === '.') {
             if (isDecimal) isDecimal = false;
             else return;
         }
-        display.textContent += number;
+        input.textContent += number;
     }
 
     function pressOperator(operator) {
-        if (/[a-zA-Z]/.test(display.textContent)) display.textContent = '0';
-        else if (display.textContent.slice(-1) === ' ') display.textContent = display.textContent.slice(0, -3);
-        display.textContent += ' ' + operator + ' ';
+        if (/[a-zA-Z]/.test(input.textContent)) input.textContent = '0';
+        else if (input.textContent.slice(-1) === ' ') input.textContent = input.textContent.slice(0, -3);
+        input.textContent += ' ' + operator + ' ';
         isAnswer = false;
         isDecimal = true;
     }
@@ -110,19 +112,19 @@
     }
 
     function clearAll() {
-        display.textContent = '0';
+        input.textContent = '0';
         clearCache();
     }
 
     function removeLastSymbol() {
-        if (display.textContent.length > 1) {
-            if (display.textContent.slice(-1) === ' ') {
-                display.textContent = display.textContent.slice(0, -3);
+        if (input.textContent.length > 1) {
+            if (input.textContent.slice(-1) === ' ') {
+                input.textContent = input.textContent.slice(0, -3);
             } else {
-                display.textContent = display.textContent.slice(0, -1);
+                input.textContent = input.textContent.slice(0, -1);
             }
         } else {
-            display.textContent = '0';
+            input.textContent = '0';
         }
     }
 
@@ -163,7 +165,8 @@
 
     document.addEventListener('keydown', supportKeyboard);
 
-    const display = document.querySelector('.display');
+    const input = document.querySelector('.input');
+    const displayExpr = document.querySelector('.expression');
     let isDecimal = true;
     let isAnswer = false;
     let outQueue = [];
@@ -193,4 +196,10 @@
 
     const backspace = document.querySelector('.backspace');
     backspace.addEventListener('click', removeLastSymbol);
+
+    const calc = document.querySelector('.calculator');
+    window.addEventListener("resize", function () {
+        let style = getComputedStyle(calc).getPropertyValue('font-size');
+        if (parseFloat(style) < 18) calc.style.fontSize = 18 + 'px';
+    });
 })();
